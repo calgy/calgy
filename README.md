@@ -1,6 +1,12 @@
 # Calgy API Server
 
-## Getting Started
+## Overview
+
+Web server providing an API for managing calendars. Specification of the API
+can be found at <https://github.com/calgy/calgy-api-spec>.
+
+
+## Local Development
 
 ### Using Docker
 
@@ -28,7 +34,7 @@ If you need to access a database console:
 docker-compose exec db psql --user postgres calgy_dev
 ```
 
-### Local Setup
+### Manual Setup
 
 You will need to install the following dependencies:
 
