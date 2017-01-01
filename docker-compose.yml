@@ -24,6 +24,7 @@ services:
       PGPASSWORD: "postgres"
       PGDATABASE: "calgy_dev"
       PGHOST: "db"
+      API_HOST: "${API_HOST:-localhost}"
     links:
       - db
     ports:

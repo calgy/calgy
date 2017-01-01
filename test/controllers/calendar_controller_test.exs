@@ -1,5 +1,7 @@
 defmodule CalgyApi.CalendarControllerTest do
   use CalgyApi.ConnCase
+
+  alias Plug.Conn
   alias CalgyApi.Calendar
 
   setup %{conn: conn} do
@@ -17,6 +19,9 @@ defmodule CalgyApi.CalendarControllerTest do
     assert body["id"]
     assert body["state"] == "pending"
     assert Repo.get(Calendar, body["id"])
+
+    location = Conn.get_resp_header(conn, "location") |> List.first
+    assert location == calendar_url(conn, :show, body["id"])
   end
 
   test "GET shows information about a calendar", %{conn: conn} do

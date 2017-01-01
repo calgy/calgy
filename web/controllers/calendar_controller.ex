@@ -7,6 +7,7 @@ defmodule CalgyApi.CalendarController do
 
     conn
     |> put_status(201)
+    |> put_resp_header("location", calendar_url(conn, :show, calendar))
     |> render("calendar.json", %{calendar: calendar})
   end
 
