@@ -14,6 +14,6 @@ config :calgy_api, CalgyApi.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
-  database: "calgy_api_test",
+  database: "calgy_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox

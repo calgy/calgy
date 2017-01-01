@@ -1,14 +1,44 @@
 # Calgy API Server
 
-To start your Phoenix app:
+## Getting Started
+
+### Using Docker
+
+If you have docker installed, the easiest way to get up and running is to
+use the docker-compose scripts provided with the app. You do not need to
+install elixir or have to worry about any other dependencies.
+
+Run the following only once:
+```
+docker-compose build
+docker-compose start db
+docker-compose run web mix ecto.setup
+```
+
+Run the following each time you want to start the server:
+```
+docker-compose up
+```
+
+You should now be able to access the server at http://localhost:4000/.
+
+### Local Setup
+
+You will need to install the following dependencies:
+
+  * Elixir 1.3 or later
+  * PostgreSQL 9.5 or later
+
+To start the app:
 
   * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
+  * Create and migrate your database with `mix ecto.setup`
   * Start Phoenix endpoint with `mix phoenix.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+You should now be able to access the server at http://localhost:4000/.
 
 Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+
 
 ## Learn more
 

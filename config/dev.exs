@@ -24,8 +24,8 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :calgy_api, CalgyApi.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
-  database: "calgy_api_dev",
-  hostname: "localhost",
+  username: System.get_env("PGUSER") || "postgres",
+  password: System.get_env("PGPASSWORD") || "postgres",
+  database: System.get_env("PGDATABASE") || "calgy_dev",
+  hostname: System.get_env("PGHOST") || "localhost",
   pool_size: 10

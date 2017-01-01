@@ -1,0 +1,32 @@
+#
+# USAGE:
+# $> docker-compose up
+#
+
+version: "2.1"
+
+services:
+  db:
+    image: "postgres:9.6-alpine"
+    environment:
+      POSTGRES_USER: "${PGUSER:-postgres}"
+      POSTGRES_PASSWORD: "${PGPASSWORD:-postgres}"
+    ports:
+      - "${PG_PORT:-127.0.0.1:5432}:5432"
+    volumes:
+      - "./data/postgres:/var/lib/postgres"
+
+  web:
+    build: "."
+    environment:
+      MIX_ENV: "dev"
+      PGUSER: "postgres"
+      PGPASSWORD: "postgres"
+      PGDATABASE: "calgy_dev"
+      PGHOST: "db"
+    links:
+      - db
+    ports:
+      - "${API_PORT:-127.0.0.1:4000}:4000"
+    volumes:
+      - ".:/app"
