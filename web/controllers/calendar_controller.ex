@@ -10,4 +10,16 @@ defmodule CalgyApi.CalendarController do
     |> render("calendar.json", %{calendar: calendar})
   end
 
+  def show(conn, %{"id" => id}) do
+    with {:ok, uuid} <- Ecto.UUID.cast(id),
+         %Calendar{} = calendar <- Repo.get(Calendar, id)
+     do render(conn, "calendar.json", %{calendar: calendar})
+    else
+      _ ->
+        conn
+        |> put_status(404)
+        |> render(CalgyApi.ErrorView, "404.json", %{})
+    end
+  end
+
 end

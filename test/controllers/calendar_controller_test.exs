@@ -19,4 +19,27 @@ defmodule CalgyApi.CalendarControllerTest do
     assert Repo.get(Calendar, body["id"])
   end
 
+  test "GET shows information about a calendar", %{conn: conn} do
+    {:ok, calendar} = Repo.insert(%Calendar{})
+    conn = get conn, calendar_path(conn, :show, calendar)
+    body = json_response(conn, 200)
+
+    assert body["id"]
+    assert body["state"]
+  end
+
+  test "GET returns 404 if uuid is invalid", %{conn: conn} do
+    {:ok, _calendar} = Repo.insert(%Calendar{})
+    conn = get conn, calendar_path(conn, :show, "teapot")
+    body = json_response(conn, 404)
+    assert body["error"]
+  end
+
+  test "GET retuns 404 if calendar is not found", %{conn: conn} do
+    {:ok, _calendar} = Repo.insert(%Calendar{})
+    conn = get conn, calendar_path(conn, :show, Ecto.UUID.generate)
+    body = json_response(conn, 404)
+    assert body["error"]
+  end
+
 end

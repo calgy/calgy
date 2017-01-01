@@ -6,16 +6,16 @@ defmodule CalgyApi.ErrorViewTest do
 
   test "renders 404.json" do
     assert render(CalgyApi.ErrorView, "404.json", []) ==
-           %{errors: %{detail: "Page not found"}}
+           %{error: "not found"}
   end
 
   test "render 500.json" do
     assert render(CalgyApi.ErrorView, "500.json", []) ==
-           %{errors: %{detail: "Internal server error"}}
+           %{error: "server error"}
   end
 
   test "render any other" do
     assert render(CalgyApi.ErrorView, "505.json", []) ==
-           %{errors: %{detail: "Internal server error"}}
+           %{error: "server error"}
   end
 end

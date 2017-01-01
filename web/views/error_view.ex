@@ -2,11 +2,11 @@ defmodule CalgyApi.ErrorView do
   use CalgyApi.Web, :view
 
   def render("404.json", _assigns) do
-    %{errors: %{detail: "Page not found"}}
+    %{error: "not found"}
   end
 
   def render("500.json", _assigns) do
-    %{errors: %{detail: "Internal server error"}}
+    %{error: "server error"}
   end
 
   # In case no render clause matches or no
