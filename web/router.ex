@@ -5,7 +5,10 @@ defmodule CalgyApi.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", CalgyApi do
+  scope "/", CalgyApi do
     pipe_through :api
+
+    resources "/calendars", CalendarController, only: [:create]
   end
+
 end
