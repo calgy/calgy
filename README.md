@@ -22,6 +22,12 @@ docker-compose up
 
 You should now be able to access the server at http://localhost:4000/.
 
+If you need to access a database console:
+
+```
+docker-compose exec db psql --user postgres calgy_dev
+```
+
 ### Local Setup
 
 You will need to install the following dependencies:
