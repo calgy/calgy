@@ -12,7 +12,7 @@ defmodule CalgyApi.CalendarController do
 
   def show(conn, %{"id" => id}) do
     with {:ok, uuid} <- Ecto.UUID.cast(id),
-         %Calendar{} = calendar <- Repo.get(Calendar, id)
+         %Calendar{} = calendar <- Repo.get(Calendar, uuid)
      do render(conn, "calendar.json", %{calendar: calendar})
     else
       _ ->
