@@ -19,7 +19,7 @@ services:
   web:
     build: "."
     environment:
-      MIX_ENV: "dev"
+      MIX_ENV:
       PGUSER: "postgres"
       PGPASSWORD: "postgres"
       PGDATABASE: "calgy_dev"

@@ -1,6 +1,5 @@
 FROM elixir:1.3
 
-ENV MIX_ENV dev
 ENV PORT 4000
 
 WORKDIR /app

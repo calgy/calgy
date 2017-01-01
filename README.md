@@ -14,12 +14,16 @@ If you have docker installed, the easiest way to get up and running is to
 use the docker-compose scripts provided with the app. You do not need to
 install elixir or have to worry about any other dependencies.
 
+#### Initial Setup
+
 Run the following only once:
 ```
 docker-compose build
 docker-compose start db
 docker-compose run web mix ecto.setup
 ```
+
+#### Starting the Server
 
 Run the following each time you want to start the server:
 ```
@@ -28,8 +32,22 @@ docker-compose up
 
 You should now be able to access the server at http://localhost:4000/.
 
-If you need to access a database console:
+#### Running the Test Suite
 
+If you are already running the web container, it's a little bit faster to
+run the test suite using the same container instance by using `exec`:
+```
+docker-compose exec web mix test
+```
+
+Otherwise, you can start a new web container to run the test suite:
+```
+docker-compose run web mix test
+```
+
+#### Database Console
+
+If you need to access a database console:
 ```
 docker-compose exec db psql --user postgres calgy_dev
 ```
@@ -49,7 +67,7 @@ To start the app:
 
 You should now be able to access the server at http://localhost:4000/.
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+Ready to run in production? Please [check the phoenix deployment guides](http://www.phoenixframework.org/docs/deployment).
 
 
 ## Learn more
