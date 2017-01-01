@@ -10,7 +10,7 @@ defmodule CalgyApi.CalendarControllerTest do
     {:ok, %{conn: conn}}
   end
 
-  test "creates a pending calendar by default", %{conn: conn} do
+  test "POST creates a pending calendar by default", %{conn: conn} do
     conn = post conn, calendar_path(conn, :create), %{}
     body = json_response(conn, 201)
 

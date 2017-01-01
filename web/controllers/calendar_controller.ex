@@ -2,13 +2,12 @@ defmodule CalgyApi.CalendarController do
   use CalgyApi.Web, :controller
   alias CalgyApi.Calendar
 
-  def create(conn, %{} = params) do
-    changeset = Calendar.changeset(%Calendar{}, params)
-    {:ok, calendar} = Repo.insert(changeset)
+  def create(conn, _) do
+    {:ok, calendar} = Repo.insert(%Calendar{})
 
     conn
     |> put_status(201)
-    |> render("calendar.json", calendar)
+    |> render("calendar.json", %{calendar: calendar})
   end
 
 end

@@ -2,12 +2,12 @@ defmodule CalgyApi.Calendar do
   use CalgyApi.Web, :model
 
   schema "calendars" do
-    field :state, :string
+    field :state, :string, default: "pending"
     timestamps
   end
 
-  def changeset(_struct, _params) do
-    %CalgyApi.Calendar{state: "pending"}
+  def changeset(struct, _params) do
+    struct
   end
 
 end
