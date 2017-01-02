@@ -3,8 +3,8 @@ defmodule CalgyApi.Calendar do
 
   schema "calendars" do
     field :state, :string, default: "pending"
-    field :title
-    field :description
+    field :title, :string
+    field :description, :string
     timestamps
   end
 
