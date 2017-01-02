@@ -24,6 +24,39 @@ defmodule CalgyApi.CalendarControllerTest do
     assert location == calendar_url(conn, :show, body["id"])
   end
 
+  test "POST ignores attempts to set the id", %{conn: conn} do
+    id = Ecto.UUID.generate
+    conn = post conn, calendar_path(conn, :create), %{id: id}
+    assert json_response(conn, 201)["id"] != id
+  end
+
+  test "POST allows setting :title and :description", %{conn: conn} do
+    attrs = %{title: "my title", description: "my description"}
+    conn = post conn, calendar_path(conn, :create), attrs
+    body = json_response(conn, 201)
+
+    assert body["title"] == "my title"
+    assert body["description"] == "my description"
+  end
+
+  test "POST response does not include nil values", %{conn: conn} do
+    conn = post conn, calendar_path(conn, :create), %{}
+    body = json_response(conn, 201)
+
+    refute Map.has_key?(body, "title")
+    refute Map.has_key?(body, "description")
+  end
+
+  test "POST returns an error if any attributes are invalid", %{conn: conn} do
+    attrs = %{title: String.duplicate("x", 101)}
+    conn = post conn, calendar_path(conn, :create), attrs
+    body = json_response(conn, 422)
+    error = List.first(body["errors"])
+
+    assert error["path"] == "#/title"
+    assert error["code"] == "too_long"
+  end
+
   test "GET shows information about a calendar", %{conn: conn} do
     {:ok, calendar} = Repo.insert(%Calendar{})
     conn = get conn, calendar_path(conn, :show, calendar)
@@ -45,6 +78,37 @@ defmodule CalgyApi.CalendarControllerTest do
     conn = get conn, calendar_path(conn, :show, Ecto.UUID.generate)
     body = json_response(conn, 404)
     assert body["error"]
+  end
+
+  test "PUT ignores attempt to set the id", %{conn: conn} do
+    {:ok, calendar} = Repo.insert(%Calendar{})
+
+    id = Ecto.UUID.generate
+    conn = put conn, calendar_path(conn, :update, calendar), %{id: id}
+    assert json_response(conn, 200)["id"] == calendar.id
+  end
+
+  test "PUT allows setting :title and :description", %{conn: conn} do
+    {:ok, calendar} = Repo.insert(%Calendar{})
+
+    attrs = %{title: "new title", description: "new description"}
+    conn = put conn, calendar_path(conn, :update, calendar), attrs
+    body = json_response(conn, 200)
+
+    assert body["title"] == "new title"
+    assert body["description"] == "new description"
+  end
+
+  test "PUT returns an error if any attributes are invalid", %{conn: conn} do
+    {:ok, calendar} = Repo.insert(%Calendar{})
+
+    attrs = %{title: String.duplicate("x", 101)}
+    conn = put conn, calendar_path(conn, :update, calendar), attrs
+    body = json_response(conn, 422)
+    error = List.first(body["errors"])
+
+    assert error["path"] == "#/title"
+    assert error["code"] == "too_long"
   end
 
 end

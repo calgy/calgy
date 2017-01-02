@@ -5,6 +5,13 @@ defmodule CalgyApi.ErrorView do
     %{error: "not found"}
   end
 
+  def render("422.json", changeset) do
+    errors = for {field, {msg, _}} <- changeset.errors,
+      do: %{ path: "#/#{field}", code: msg }
+
+    %{ errors: errors }
+  end
+
   def render("500.json", _assigns) do
     %{error: "server error"}
   end

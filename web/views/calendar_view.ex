@@ -7,10 +7,16 @@ defmodule CalgyApi.CalendarView do
     end
   end
 
+  defp reject_nils(map) do
+    for {k,v} <- map, v != nil, into: %{}, do: {k,v}
+  end
+
   defp render_pending(calendar) do
-    %{
+    reject_nils %{
       id: calendar.id,
       state: calendar.state,
+      title: calendar.title,
+      description: calendar.description,
     }
   end
 
