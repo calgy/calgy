@@ -9,9 +9,11 @@ defmodule CalgyApi.CalendarController do
 
     case Repo.insert(changeset) do
       {:ok, calendar} ->
+        admin_url = calendar_url(conn, :show, calendar.admin_id) <> ";admin"
+
         conn
         |> put_status(201)
-        |> put_resp_header("location", calendar_url(conn, :show, calendar))
+        |> put_resp_header("location", admin_url)
         |> render("calendar.json", %{calendar: calendar})
       {:error, changeset} ->
         render_changeset_errors(conn, changeset)
@@ -36,8 +38,14 @@ defmodule CalgyApi.CalendarController do
   end
 
   defp find_calendar(id) do
+    {id, field} = case String.split_at(id, 36) do
+      {id, ""}       -> {id, :id}
+      {id, ";admin"} -> {id, :admin_id}
+      _ ->              {nil, nil} # invalid uuid
+    end
+
     case Ecto.UUID.cast(id) do
-      {:ok, id} -> Repo.get(Calendar, id)
+      {:ok, id} -> Repo.get_by(Calendar, [{field,id}])
       :error -> nil # invalid uuid
     end
   end

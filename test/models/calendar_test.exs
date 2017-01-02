@@ -39,4 +39,29 @@ defmodule CalgyApi.CalendarTest do
     assert {:description, "too_long"} in errors_on(%Calendar{}, attrs)
   end
 
+  test "changeset generates a default :admin_id for new calendars" do
+    changeset = Calendar.changeset(%Calendar{}, %{})
+    assert Ecto.Changeset.apply_changes(changeset).admin_id
+  end
+
+  test "changeset does not overwrite :admin_id for existing calendars" do
+    calendar =
+      %Calendar{admin_id: "orig-uuid"}
+      |> Ecto.put_meta(state: :loaded)
+      |> Calendar.changeset(%{})
+      |> Ecto.Changeset.apply_changes
+
+    assert calendar.admin_id == "orig-uuid"
+  end
+
+  test "changeset does not generate new :admin_id if existing is nil" do
+    calendar =
+      %Calendar{}
+      |> Ecto.put_meta(state: :loaded)
+      |> Calendar.changeset(%{})
+      |> Ecto.Changeset.apply_changes
+
+    refute calendar.admin_id
+  end
+
 end

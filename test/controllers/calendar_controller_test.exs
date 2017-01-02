@@ -16,12 +16,14 @@ defmodule CalgyApi.CalendarControllerTest do
     conn = post conn, calendar_path(conn, :create), %{}
     body = json_response(conn, 201)
 
-    assert body["id"]
-    assert body["state"] == "pending"
-    assert Repo.get(Calendar, body["id"])
+    calendar = Repo.get(Calendar, body["id"])
+    assert calendar
 
     location = Conn.get_resp_header(conn, "location") |> List.first
-    assert location == calendar_url(conn, :show, body["id"])
+    assert location == calendar_url(conn, :show, calendar.admin_id) <> ";admin"
+
+    assert body["state"] == "pending"
+    assert body["public_url"] == calendar_url(conn, :show, calendar.id)
   end
 
   test "POST ignores attempts to set the id", %{conn: conn} do
