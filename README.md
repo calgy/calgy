@@ -1,5 +1,7 @@
 # Calgy API Server
 
+**TOO EARY TO BE USEFUL, CHECK BACK LATER.**
+
 ## Overview
 
 Web server providing an API for managing calendars. Specification of the API
