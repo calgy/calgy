@@ -12,7 +12,7 @@ services:
       POSTGRES_USER: "${PGUSER:-postgres}"
       POSTGRES_PASSWORD: "${PGPASSWORD:-postgres}"
     ports:
-      - "${PG_PORT:-127.0.0.1:5432}:5432"
+      - "127.0.0.1:${PGPORT:-5432}:5432"
     volumes:
       - "./data/postgres:/var/lib/postgres"
 
