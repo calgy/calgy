@@ -1,4 +1,4 @@
-FROM elixir:1.3
+FROM elixir:1.5
 
 ENV PORT 4000
 
@@ -15,6 +15,7 @@ COPY . /app
 #USER phoenix
 
 RUN mix local.hex --force \
+  && mix local.rebar --force \
   && mix deps.get \
   && mix deps.compile \
   && mix compile \
@@ -22,4 +23,4 @@ RUN mix local.hex --force \
 VOLUME /app
 EXPOSE ${PORT}
 
-CMD ["mix", "phoenix.server"]
+CMD ["mix", "phx.server"]
