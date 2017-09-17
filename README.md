@@ -13,16 +13,25 @@ can be found at <https://github.com/calgy/calgy-api-spec>.
 ### Using Docker
 
 If you have docker installed, the easiest way to get up and running is to
-use the docker-compose scripts provided with the app. You do not need to
+use the docker-compose config provided with the app. You do not need to
 install elixir or have to worry about any other dependencies.
 
 #### Initial Setup
 
+1. Build the initial docker image for the application:
+```bash
+docker-compose build
+
+```
+
+2. Create the PostgreSQL database and run migrations. It takes a little
+while for the database image to initialize on the first run, so you may see
+a repeated message about it being unavailable for up to a minute or two.
+
 Run the following only once:
 ```
-docker-compose build
-docker-compose start db
-docker-compose run web mix ecto.setup
+docker-compose run --rm web mix cmd --app calgy mix ecto.setup
+docker-compose stop
 ```
 
 #### Starting the Server
@@ -58,7 +67,7 @@ docker-compose exec db psql --user postgres calgy_dev
 
 You will need to install the following dependencies:
 
-  * Elixir 1.3 or later
+  * Elixir 1.4 or later
   * PostgreSQL 9.5 or later
 
 To start the app:

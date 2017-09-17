@@ -2,6 +2,10 @@ FROM elixir:1.5
 
 ENV PORT 4000
 
+RUN set -xe \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends netcat-traditional
+
 WORKDIR /app
 COPY . /app
 

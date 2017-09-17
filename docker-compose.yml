@@ -14,7 +14,7 @@ services:
     ports:
       - "127.0.0.1:${PGPORT:-5432}:5432"
     volumes:
-      - "./data/postgres:/var/lib/postgres"
+      - "./data/postgres:/var/lib/postgresql/data"
 
   web:
     build: "."
@@ -25,9 +25,11 @@ services:
       PGDATABASE: "calgy_dev"
       PGHOST: "db"
       API_HOST: "${API_HOST:-localhost}"
+    entrypoint: "bin/wait-for-db.sh"
+    command: ["mix", "phx.server"]
     links:
       - db
     ports:
-      - "${API_PORT:-127.0.0.1:4000}:4000"
+      - "127.0.0.1:${API_PORT:-4000}:4000"
     volumes:
       - ".:/app"
