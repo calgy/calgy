@@ -11,6 +11,8 @@ services:
     environment:
       POSTGRES_USER: "${PGUSER:-postgres}"
       POSTGRES_PASSWORD: "${PGPASSWORD:-postgres}"
+      PGUSER: "${PGUSER:-postgres}"
+      PGPASSWORD: "${PGPASSWORD:-postgres}"
     ports:
       - "127.0.0.1:${PGPORT:-5432}:5432"
     volumes:
@@ -20,9 +22,9 @@ services:
     build: "."
     environment:
       MIX_ENV:
-      PGUSER: "postgres"
-      PGPASSWORD: "postgres"
-      PGDATABASE: "calgy_dev"
+      PGUSER: "${PGUSER:-postgres}"
+      PGPASSWORD: "${PGPASSWORD:-postgres}"
+      PGDATABASE: "${PGDATABASE:-calgy_dev}"
       PGHOST: "db"
       API_HOST: "${API_HOST:-localhost}"
     entrypoint: "bin/wait-for-db.sh"

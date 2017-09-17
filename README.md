@@ -60,7 +60,7 @@ docker-compose run web mix test
 
 If you need to access a database console:
 ```
-docker-compose exec db psql --user postgres calgy_dev
+docker-compose exec db psql calgy_dev
 ```
 
 ### Manual Setup
