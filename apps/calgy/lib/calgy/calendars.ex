@@ -15,6 +15,11 @@ defmodule Calgy.Calendars do
     end
   end
 
+  def delete_calendar(%Calendar{} = calendar) do
+    changeset = Calendar.change_state(calendar, "deleted")
+    {:ok, _calendar} = Repo.update(changeset)
+  end
+
   def get_calendar(id, field \\ :id) when field in [:id, :admin_id] do
     with {:ok, uuid}     <- Ecto.UUID.cast(id),
          {:ok, calendar} <- repo_get_by(Calendar, [{field, uuid}])
@@ -42,10 +47,17 @@ defmodule Calgy.Calendars do
     end)
   end
 
-  defp repo_get_by(queryable, clauses) do
-    case Repo.get_by(queryable, clauses) do
-      nil    -> {:error, :not_found}
-      result -> {:ok, result}
+  defp repo_get_by(queryable, [{_field, id}] = clauses) do
+    calendar = Repo.get_by(queryable, clauses)
+
+    case calendar do
+      # Only allowed to retrieve deleted events using an admin id
+      %Calendar{state: "deleted", admin_id: ^id} -> {:ok, calendar}
+      %Calendar{state: "deleted"}                -> {:error, :not_found}
+
+      # Not deleted, allowed to access if found
+      %Calendar{} -> {:ok, calendar}
+      nil         -> {:error, :not_found}
     end
   end
 

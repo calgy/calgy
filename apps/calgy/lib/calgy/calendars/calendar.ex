@@ -16,8 +16,14 @@ defmodule Calgy.Calendars.Calendar do
     timestamps()
   end
 
+  def change_state(%Calendar{} = calendar, "deleted") do
+    calendar
+    |> Calendar.changeset()
+    |> Ecto.Changeset.put_change(:state, "deleted")
+  end
+
   @doc false
-  def changeset(%Calendar{} = calendar, attrs) do
+  def changeset(%Calendar{} = calendar, attrs \\ %{}) do
     calendar
     |> cast(attrs, [:title, :description])
     |> validate_length(:title, max: 100, message: "too_long")

@@ -33,6 +33,14 @@ defmodule Calgy.CalendarsTest do
     end
   end
 
+  describe "delete_calendar/1" do
+    test "changes the state of the calendar to deleted" do
+      existing = calendar_fixture()
+      assert {:ok, %Calendar{} = calendar} = Calendars.delete_calendar(existing)
+      assert calendar.state == "deleted"
+    end
+  end
+
   describe "get_calendar/1" do # get_calendar/2 with field \\ :id
     test "finds the calendar by its id" do
       existing = calendar_fixture()
@@ -59,6 +67,21 @@ defmodule Calgy.CalendarsTest do
     test "returns a :not_found error when calendar does not exist" do
       uuid = "a75bb992-4454-40c5-af2c-60fb858e253c"
       assert {:error, :not_found} = Calendars.get_calendar(uuid, :id)
+    end
+
+    test "returns a :not_found error if id is used and state is deleted" do
+      existing = calendar_fixture()
+      Calendars.delete_calendar(existing)
+      assert {:error, :not_found}  = Calendars.get_calendar(existing.id, :id)
+    end
+
+    test "returns the calendar if admin_id is used and state is deleted" do
+      existing = calendar_fixture()
+      Calendars.delete_calendar(existing)
+
+      assert {:ok, %Calendar{} = calendar} =
+        Calendars.get_calendar(existing.admin_id, :admin_id)
+      assert calendar.state == "deleted"
     end
 
     test "does not allow matching against non-id fields" do
