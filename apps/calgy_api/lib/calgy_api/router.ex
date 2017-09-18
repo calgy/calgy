@@ -8,7 +8,8 @@ defmodule CalgyApi.Router do
   scope "/", CalgyApi do
     pipe_through :api
 
-    resources "/calendars", CalendarController, only: [:create, :show, :update]
+    resources "/calendars", CalendarController,
+      only: [:create, :delete, :show, :update]
   end
 
 end

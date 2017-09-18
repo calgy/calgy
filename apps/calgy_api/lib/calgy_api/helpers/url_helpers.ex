@@ -3,7 +3,7 @@ defmodule CalgyApi.Helpers.UrlHelpers do
 
   alias Calgy.Calendars.Calendar
 
-  def calendar_admin_url(conn, action, nil), do: nil
+  def calendar_admin_url(_conn, _action, nil), do: nil
   def calendar_admin_url(conn, action, %Calendar{} = calendar),
     do: calendar_admin_url(conn, action, calendar.admin_id)
   def calendar_admin_url(conn, action, admin_id),

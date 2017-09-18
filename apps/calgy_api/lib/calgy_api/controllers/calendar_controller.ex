@@ -15,6 +15,17 @@ defmodule CalgyApi.CalendarController do
     end
   end
 
+  def delete(conn, %{"id" => id}) do
+    with {:ok, :admin_id, id} <- parse_calendar_id(id),
+         {:ok, existing}  <- Calendars.get_calendar(id, :admin_id),
+         {:ok, _calendar} <- Calendars.delete_calendar(existing)
+      do send_resp(conn, :no_content, "")
+    else
+      {:ok, :id, _id} -> {:error, :not_found} # Not an admin url, unauthorized
+      fallback        -> fallback # Let pass to fallback controller
+    end
+  end
+
   def show(conn, %{"id" => id}) do
     with {:ok, field, id} <- parse_calendar_id(id),
          {:ok, calendar}  <- Calendars.get_calendar(id, field)

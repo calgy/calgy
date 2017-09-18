@@ -92,11 +92,11 @@ defmodule CalgyApi.CalendarControllerTest do
     {:ok, calendar} = Calendars.create_calendar()
     assert calendar.admin_id # Ensure an admin_id is set
 
-    response = get conn, calendar_url(conn, :show, calendar)
-    refute json_response(response, 200)["admin_url"]
+    res = get conn, calendar_url(conn, :show, calendar)
+    refute json_response(res, 200)["admin_url"]
 
-    response = get conn, calendar_admin_url(conn, :show, calendar)
-    refute json_response(response, 200)["admin_url"]
+    res = get conn, calendar_admin_url(conn, :show, calendar)
+    refute json_response(res, 200)["admin_url"]
   end
 
   test "PUT does not allow updates if public calendar url is used", %{conn: conn} do
@@ -136,6 +136,26 @@ defmodule CalgyApi.CalendarControllerTest do
 
     assert error["path"] == "#/title"
     assert error["code"] == "too_long"
+  end
+
+  test "DELETE marks calendar as deleted if admin calendar url is used", %{conn: conn} do
+    {:ok, calendar} = Calendars.create_calendar()
+
+    res = delete conn, calendar_admin_url(conn, :delete, calendar)
+    assert response(res, 204)
+
+    res = get conn, calendar_url(conn, :show, calendar)
+    assert json_response(res, 404)
+
+    res = get conn, calendar_admin_url(conn, :show, calendar)
+    assert json_response(res, 200)["state"] == "deleted"
+  end
+
+  test "DELETE does not allow deletion if public calendar url is used", %{conn: conn} do
+    {:ok, calendar} = Calendars.create_calendar()
+
+    res = delete conn, calendar_url(conn, :delete, calendar)
+    assert json_response(res, 404)
   end
 
 end
