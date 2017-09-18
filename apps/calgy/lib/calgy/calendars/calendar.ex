@@ -2,6 +2,8 @@ defmodule Calgy.Calendars.Calendar do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Calgy.Calendars.Calendar
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
@@ -15,7 +17,7 @@ defmodule Calgy.Calendars.Calendar do
   end
 
   @doc false
-  def changeset(calendar, attrs) do
+  def changeset(%Calendar{} = calendar, attrs) do
     calendar
     |> cast(attrs, [:title, :description])
     |> validate_length(:title, max: 100, message: "too_long")
@@ -23,7 +25,7 @@ defmodule Calgy.Calendars.Calendar do
     |> set_defaults
   end
 
-  def set_defaults(changeset) do
+  defp set_defaults(changeset) do
     case Ecto.get_meta(changeset.data, :state) do
       :built -> # new record
         changeset
