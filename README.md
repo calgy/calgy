@@ -77,14 +77,3 @@ To start the app:
   * Start Phoenix endpoint with `mix phoenix.server`
 
 You should now be able to access the server at http://localhost:4000/.
-
-Ready to run in production? Please [check the phoenix deployment guides](http://www.phoenixframework.org/docs/deployment).
-
-
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
