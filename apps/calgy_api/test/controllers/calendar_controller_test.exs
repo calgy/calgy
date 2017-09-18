@@ -2,14 +2,10 @@ defmodule CalgyApi.CalendarControllerTest do
   use CalgyApi.ConnCase
 
   alias Plug.Conn
-  alias Calgy.Calendars.Calendar
-  alias Calgy.Repo
+  alias Calgy.Calendars
 
-  setup %{conn: conn} do
-    conn =
-      conn
-      |> put_req_header("accept", "application/json")
-
+  setup %{conn: orig_conn} do
+    conn = put_req_header(orig_conn, "accept", "application/json")
     {:ok, %{conn: conn}}
   end
 
@@ -17,7 +13,7 @@ defmodule CalgyApi.CalendarControllerTest do
     conn = post conn, calendar_path(conn, :create), %{}
     body = json_response(conn, 201)
 
-    calendar = Repo.get(Calendar, body["id"])
+    {:ok, calendar} = Calendars.get_calendar(body["id"])
     assert calendar
 
     location = Conn.get_resp_header(conn, "location") |> List.first
@@ -61,7 +57,7 @@ defmodule CalgyApi.CalendarControllerTest do
   end
 
   test "GET shows information about a calendar", %{conn: conn} do
-    {:ok, calendar} = Repo.insert(%Calendar{})
+    {:ok, calendar} = Calendars.create_calendar()
     conn = get conn, calendar_path(conn, :show, calendar)
     body = json_response(conn, 200)
 
@@ -70,21 +66,21 @@ defmodule CalgyApi.CalendarControllerTest do
   end
 
   test "GET returns 404 if uuid is invalid", %{conn: conn} do
-    {:ok, _calendar} = Repo.insert(%Calendar{})
+    {:ok, _calendar} = Calendars.create_calendar()
     conn = get conn, calendar_path(conn, :show, "teapot")
     body = json_response(conn, 404)
     assert body["error"]
   end
 
   test "GET retuns 404 if calendar is not found", %{conn: conn} do
-    {:ok, _calendar} = Repo.insert(%Calendar{})
+    {:ok, _calendar} = Calendars.create_calendar()
     conn = get conn, calendar_path(conn, :show, Ecto.UUID.generate)
     body = json_response(conn, 404)
     assert body["error"]
   end
 
   test "PUT ignores attempt to set the id", %{conn: conn} do
-    {:ok, calendar} = Repo.insert(%Calendar{})
+    {:ok, calendar} = Calendars.create_calendar()
 
     id = Ecto.UUID.generate
     conn = put conn, calendar_path(conn, :update, calendar), %{id: id}
@@ -92,7 +88,7 @@ defmodule CalgyApi.CalendarControllerTest do
   end
 
   test "PUT allows setting :title and :description", %{conn: conn} do
-    {:ok, calendar} = Repo.insert(%Calendar{})
+    {:ok, calendar} = Calendars.create_calendar()
 
     attrs = %{title: "new title", description: "new description"}
     conn = put conn, calendar_path(conn, :update, calendar), attrs
@@ -103,7 +99,7 @@ defmodule CalgyApi.CalendarControllerTest do
   end
 
   test "PUT returns an error if any attributes are invalid", %{conn: conn} do
-    {:ok, calendar} = Repo.insert(%Calendar{})
+    {:ok, calendar} = Calendars.create_calendar()
 
     attrs = %{title: String.duplicate("x", 101)}
     conn = put conn, calendar_path(conn, :update, calendar), attrs
