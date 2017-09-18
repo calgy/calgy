@@ -7,29 +7,23 @@ defmodule CalgyApi.CalendarView do
     end
   end
 
-  def admin_url(conn, calendar) do
-    case calendar.admin_id do
-      nil -> nil
-      id  -> calendar_url(conn, :show, id) <> ";admin"
-    end
-  end
-
-  def public_url(conn, calendar) do
-    calendar_url(conn, :show, calendar.id)
-  end
-
   defp reject_nils(map) do
     for {k,v} <- map, v != nil, into: %{}, do: {k,v}
   end
 
-  defp render_pending(conn, calendar) do
+  defp render_pending(%{status: status} = conn, calendar) do
+    admin_url = case status do
+      201 -> calendar_admin_url(conn, :show, calendar)
+      _   -> nil
+    end
+
     reject_nils %{
       id: calendar.id,
       state: calendar.state,
       title: calendar.title,
       description: calendar.description,
-#     admin_url: admin_url(conn, calendar),
-      public_url: public_url(conn, calendar),
+      admin_url: admin_url,
+      public_url: calendar_url(conn, :show, calendar),
     }
   end
 

@@ -20,6 +20,7 @@ defmodule CalgyApi.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
       import CalgyApi.Router.Helpers
+      import CalgyApi.Helpers.UrlHelpers
 
       # The default endpoint for testing
       @endpoint CalgyApi.Endpoint
@@ -32,7 +33,12 @@ defmodule CalgyApi.ConnCase do
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Calgy.Repo, {:shared, self()})
     end
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> Plug.Conn.put_private(:phoenix_endpoint, CalgyApi.Endpoint) # Support for *_url
+
+    {:ok, conn: conn}
   end
 
 end

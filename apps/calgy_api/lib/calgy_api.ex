@@ -22,6 +22,7 @@ defmodule CalgyApi do
       use Phoenix.Controller, namespace: CalgyApi
       import Plug.Conn
       import CalgyApi.Router.Helpers
+      import CalgyApi.Helpers.UrlHelpers
     end
   end
 
@@ -34,6 +35,7 @@ defmodule CalgyApi do
       import Phoenix.Controller, only: [get_flash: 2, view_module: 1]
 
       import CalgyApi.Router.Helpers
+      import CalgyApi.Helpers.UrlHelpers
     end
   end
 
