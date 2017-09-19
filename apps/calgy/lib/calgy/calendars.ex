@@ -16,8 +16,8 @@ defmodule Calgy.Calendars do
   end
 
   def delete_calendar(%Calendar{} = calendar) do
-    changeset = Calendar.change_state(calendar, "deleted")
-    {:ok, _calendar} = Repo.update(changeset)
+    {:ok, %Calendar{state: "deleted"}} =
+      update_calendar(calendar, %{state: "deleted"})
   end
 
   def get_calendar(id, field \\ :id) when field in [:id, :admin_id] do

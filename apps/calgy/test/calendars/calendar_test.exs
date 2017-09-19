@@ -60,6 +60,102 @@ defmodule Calgy.Calendars.CalendarTest do
 
       refute calendar.admin_id
     end
+
+    test "applies valid state transitions" do
+      calendar =
+        %Calendar{state: "pending"}
+        |> Calendar.changeset(%{state: "anonymous"})
+        |> Ecto.Changeset.apply_changes
+      assert calendar.state == "anonymous"
+    end
+
+    test "does not apply invalid state transitions" do
+      calendar =
+        %Calendar{state: "deleted"}
+        |> Calendar.changeset(%{state: "anonymous"})
+        |> Ecto.Changeset.apply_changes
+      assert calendar.state == "deleted"
+    end
+  end
+
+  describe "#try_state_transition/2" do
+    @all_states ~w[pending anonymous deleted]
+
+    @valid_transitions [
+      {"pending",   "anonymous"},
+      {"pending",   "deleted"  },
+      {"anonymous", "deleted"  },
+    ]
+
+    test "applies state transition when given a string/binary state" do
+      calendar =
+        changeset(%{})
+        |> Calendar.try_state_transition("anonymous")
+        |> Ecto.Changeset.apply_changes
+      assert calendar.state == "anonymous"
+    end
+
+    test "applies state transition when given a map of args with a state key" do
+      calendar_w_symbol_keys =
+        changeset(%{})
+        |> Calendar.try_state_transition(%{state: "anonymous"})
+        |> Ecto.Changeset.apply_changes
+      assert calendar_w_symbol_keys.state == "anonymous"
+
+      calendar_w_string_keys =
+        changeset(%{})
+        |> Calendar.try_state_transition(%{"state" => "anonymous"})
+        |> Ecto.Changeset.apply_changes
+      assert calendar_w_string_keys.state == "anonymous"
+    end
+
+    test "does not apply state transition if given a map without a state key" do
+      calendar =
+        changeset(%{})
+        |> Calendar.try_state_transition(%{})
+        |> Ecto.Changeset.apply_changes
+      assert calendar.state == %Calendar{}.state
+    end
+
+    test "allows valid state transitions" do
+      for {s1, s2} <- @valid_transitions do
+        calendar =
+          changeset(%Calendar{state: s1}, %{})
+          |> Calendar.try_state_transition(s2)
+          |> Ecto.Changeset.apply_changes
+        assert calendar.state == s2
+      end
+    end
+
+    test "ignores invalid state transitions" do
+      all_transitions =
+        for s1 <- @all_states,
+            s2 <- @all_states,
+            s1 != s2, # Exclude transition to same state
+            do: {s1, s2}
+
+      invalid_transitions = all_transitions -- @valid_transitions
+
+      for {s1, s2} <- invalid_transitions do
+        calendar =
+          changeset(%Calendar{state: s1}, %{})
+          |> Calendar.try_state_transition(s2)
+          |> Ecto.Changeset.apply_changes
+        refute calendar.state == s2
+        assert calendar.state == s1
+      end
+    end
+
+    test "clears the admin_id when transitioning to the 'anonymous' state" do
+      calendar = Ecto.Changeset.apply_changes(changeset(%{}))
+      refute calendar.admin_id == nil
+
+      transitioned =
+        Calendar.changeset(calendar)
+        |> Calendar.try_state_transition("anonymous")
+        |> Ecto.Changeset.apply_changes
+      assert transitioned.admin_id == nil
+    end
   end
 
 end

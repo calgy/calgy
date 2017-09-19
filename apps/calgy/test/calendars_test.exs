@@ -111,6 +111,22 @@ defmodule Calgy.CalendarsTest do
       assert {:error, :invalid, [title: "too_long"]} =
         Calendars.update_calendar(existing, attrs)
     end
+
+    test "allows changing the state of the calendar" do
+      existing = calendar_fixture()
+
+      assert {:ok, calendar} =
+        Calendars.update_calendar(existing, %{state: "anonymous"})
+      assert calendar.state == "anonymous"
+    end
+
+    test "does not allow unsupported state transitions" do
+      existing = calendar_fixture()
+
+      assert {:ok, calendar} =
+        Calendars.update_calendar(existing, %{state: "fire"})
+      refute calendar.state == "fire"
+    end
   end
 
 end
