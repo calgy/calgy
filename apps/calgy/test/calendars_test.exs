@@ -3,6 +3,7 @@ defmodule Calgy.CalendarsTest do
 
   alias Calgy.Calendars
   alias Calgy.Calendars.Calendar
+  alias Calgy.Calendars.Event
 
   def calendar_fixture(attrs \\ %{}) do
     {:ok, calendar} =
@@ -12,6 +13,9 @@ defmodule Calgy.CalendarsTest do
 
     calendar
   end
+
+
+  ### Public Calendars Interface
 
   describe "create_calendar/0" do
     test "creates a new pending calendar" do
@@ -126,6 +130,80 @@ defmodule Calgy.CalendarsTest do
       assert {:ok, calendar} =
         Calendars.update_calendar(existing, %{state: "fire"})
       refute calendar.state == "fire"
+    end
+  end
+
+
+  ### Public Events Interface
+
+  @valid_event_attrs %{
+    title: "Mission to Mars",
+    start_at: "2022-08-17T14:47:00Z",
+  }
+
+  def event_changeset(calendar \\ calendar_fixture(), attrs) do
+    calendar
+    |> build_assoc(:events)
+    |> Event.changeset(Map.merge(@valid_event_attrs, attrs))
+  end
+
+  def event_fixture(), do: event_fixture(%{})
+  def event_fixture(calendar \\ calendar_fixture(), attrs) do
+    changeset = event_changeset(calendar, attrs)
+    {:ok, event} = Repo.insert(changeset)
+    event
+  end
+
+  describe "create_event/2" do
+    test "creates a new event associated with calendar" do
+      calendar = calendar_fixture()
+      assert {:ok, %Event{} = event} =
+        Calendars.create_event(calendar, @valid_event_attrs)
+      assert event.title == @valid_event_attrs[:title]
+      assert Repo.one(assoc(event, :calendar))
+    end
+
+    test "returns an :invalid error when attrs are invalid" do
+      attrs = %{@valid_event_attrs | title: nil}
+      assert {:error, :invalid, [title: "required"]} =
+        Calendars.create_event(calendar_fixture(), attrs)
+    end
+  end
+
+  describe "get_event/1" do
+    test "finds the event by its id" do
+      existing = event_fixture()
+      assert {:ok, %Event{}} = Calendars.get_event(existing.id)
+    end
+
+    test "returns a :not_found error if id is not a valid uuid" do
+      assert {:error, :not_found} = Calendars.get_event("foo")
+    end
+
+    test "returns a :not_found error wen event does not exist" do
+      uuid = "68af8148-cabf-45dd-9670-58408f762e29"
+      assert {:error, :not_found} = Calendars.get_calendar(uuid)
+    end
+  end
+
+  describe "update_event/2" do
+    test "returns the updated event when attrs are valid" do
+      existing = event_fixture()
+      attrs = %{title: "updated title"}
+
+      assert {:ok, event} = Calendars.update_event(existing, attrs)
+      assert event.title == "updated title"
+
+      {:ok, persisted} = Calendars.get_event(existing.id)
+      assert persisted.title == "updated title"
+    end
+
+    test "returns an :invalid error when attrs are invalid" do
+      existing = event_fixture()
+      attrs = %{title: String.duplicate("x", 101)}
+
+      assert {:error, :invalid, [title: "too_long"]} =
+        Calendars.update_event(existing, attrs)
     end
   end
 

@@ -12,6 +12,7 @@ defmodule Calgy.Calendars.Calendar do
     field :title, :string
     field :description, :string
     field :admin_id, Ecto.UUID
+    has_many :events, Calgy.Calendars.Event
 
     timestamps()
   end

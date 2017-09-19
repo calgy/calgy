@@ -1,8 +1,12 @@
 defmodule Calgy.Calendars do
-  import Ecto.Query, warn: false
+  import Ecto
 
   alias Calgy.Calendars.Calendar
+  alias Calgy.Calendars.Event
   alias Calgy.Repo
+
+
+  ### Public Calendars Interface
 
   def create_calendar(attrs \\ %{}) do
     changeset = Calendar.changeset(%Calendar{}, attrs)
@@ -22,7 +26,7 @@ defmodule Calgy.Calendars do
 
   def get_calendar(id, field \\ :id) when field in [:id, :admin_id] do
     with {:ok, uuid}     <- Ecto.UUID.cast(id),
-         {:ok, calendar} <- repo_get_by(Calendar, [{field, uuid}])
+         {:ok, calendar} <- calendar_get_by(field, uuid)
       do {:ok, calendar}
     else
       :error -> {:error, :not_found} # UUID is invalid
@@ -41,14 +45,47 @@ defmodule Calgy.Calendars do
     end
   end
 
-  defp changeset_errors(%Ecto.Changeset{} = changeset) do
-    Enum.map(changeset.errors, fn {field, {message, _}} ->
-      {field, message}
-    end)
+
+  ### Public Events Interface
+
+  def create_event(%Calendar{} = calendar, attrs \\ %{}) do
+    changeset =
+      calendar
+      |> build_assoc(:events)
+      |> Event.changeset(attrs)
+
+    case Repo.insert(changeset) do
+      {:ok, _event} = result -> result
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:error, :invalid, changeset_errors(changeset)}
+    end
   end
 
-  defp repo_get_by(queryable, [{_field, id}] = clauses) do
-    calendar = Repo.get_by(queryable, clauses)
+  def get_event(id) do
+    with {:ok, uuid}      <- Ecto.UUID.cast(id),
+         %Event{} = event <- Repo.get(Event, uuid)
+      do {:ok, event}
+    else
+      :error -> {:error, :not_found} # UUID is invalid
+      nil    -> {:error, :not_found} # Record not found
+    end
+  end
+
+  def update_event(%Event{} = event, attrs) do
+    changeset = Event.changeset(event, attrs)
+
+    case Repo.update(changeset) do
+      {:ok, _event} = result -> result
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:error, :invalid, changeset_errors(changeset)}
+    end
+  end
+
+
+  defp calendar_get_by(field, id) do
+    calendar = Repo.get_by(Calendar, [{field, id}])
 
     case calendar do
       # Only allowed to retrieve deleted events using an admin id
@@ -59,6 +96,12 @@ defmodule Calgy.Calendars do
       %Calendar{} -> {:ok, calendar}
       nil         -> {:error, :not_found}
     end
+  end
+
+  defp changeset_errors(%Ecto.Changeset{} = changeset) do
+    Enum.map(changeset.errors, fn {field, {message, _}} ->
+      {field, message}
+    end)
   end
 
 end
