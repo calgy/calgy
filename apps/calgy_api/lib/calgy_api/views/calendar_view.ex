@@ -1,5 +1,6 @@
 defmodule CalgyApi.CalendarView do
   use CalgyApi, :view
+  import CalgyApi.Helpers.ViewHelpers, only: [reject_nils: 1]
 
   def render("calendar.json", %{conn: conn, calendar: calendar}) do
     # Only newly created events can include an admin_url in body
@@ -16,10 +17,6 @@ defmodule CalgyApi.CalendarView do
       admin_url: admin_url,
       public_url: calendar_url(conn, :show, calendar),
     }
-  end
-
-  defp reject_nils(map) do
-    for {k,v} <- map, v != nil, into: %{}, do: {k,v}
   end
 
 end
