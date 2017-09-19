@@ -25,13 +25,16 @@ defmodule Calgy.Calendars.Calendar do
   @doc false
   def changeset(%Calendar{} = calendar, attrs \\ %{}) do
     calendar
+    |> set_defaults
     |> cast(attrs, [:title, :description])
     |> validate_length(:title, max: 100, message: "too_long")
     |> validate_length(:description, max: 2000, message: "too_long")
-    |> set_defaults
   end
 
-  defp set_defaults(changeset) do
+
+  defp set_defaults(calendar_or_changeset) do
+    changeset = cast(calendar_or_changeset, %{}, [])
+
     case Ecto.get_meta(changeset.data, :state) do
       :built -> # new record
         changeset
