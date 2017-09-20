@@ -7,7 +7,7 @@
 Web server providing an API for managing calendars.
 
 The most recent copy of the Calgy API specification can be found at
-[apps/calgy_api/doc/calgy-api-spec.html](https://rawgit.com/calgy/calgy-api/master/apps/calgy_api/doc/calgy-api-spec.html).
+[apps/calgy_api/doc/calgy-api-spec.html](https://rawgit.com/calgy/calgy/master/apps/calgy_api/doc/calgy-api-spec.html).
 
 
 ## Local Development
@@ -83,7 +83,7 @@ You should now be able to access the server at http://localhost:4000/.
 ## API Specification
 
 The most recent copy of the Calgy API specification can be found at
-[apps/calgy_api/doc/calgy-api-spec.html](https://rawgit.com/calgy/calgy-api/master/apps/calgy_api/doc/calgy-api-spec.html).
+[apps/calgy_api/doc/calgy-api-spec.html](https://rawgit.com/calgy/calgy/master/apps/calgy_api/doc/calgy-api-spec.html).
 
 ### Updating / Regenerating the Specification
 
