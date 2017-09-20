@@ -4,8 +4,10 @@
 
 ## Overview
 
-Web server providing an API for managing calendars. Specification of the API
-can be found at <https://github.com/calgy/calgy-api-spec>.
+Web server providing an API for managing calendars.
+
+The most recent copy of the Calgy API specification can be found at
+[apps/calgy_api/doc/calgy-api-spec.html](apps/calgy_api/doc/calgy-api-spec.html).
 
 
 ## Local Development
@@ -76,3 +78,29 @@ To start the app:
   * Start Phoenix endpoint with `mix phx.server`
 
 You should now be able to access the server at http://localhost:4000/.
+
+
+## API Specification
+
+The most recent copy of the Calgy API specification can be found at
+[apps/calgy_api/doc/calgy-api-spec.html](apps/calgy_api/doc/calgy-api-spec.html).
+
+### Updating / Regenerating the Specification
+
+When making changes to the calgy-api-spec.raml file, a new copy of the HTML
+version of the documentation should also be generated and committed; this
+ensures the latest specification is available for browsing without having to
+install anything.
+
+Make sure you have [raml2html](https://github.com/raml2html/raml2html) installed:
+
+```bash
+npm install -g raml2html
+```
+
+To generate HTML documentation of the API specification:
+
+```bash
+cd apps/calgy_api/
+raml2html --input doc/calgy-api-spec.raml --output doc/calgy-api-spec.html
+```

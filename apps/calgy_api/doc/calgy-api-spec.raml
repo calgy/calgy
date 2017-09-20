@@ -1,0 +1,108 @@
+#%RAML 1.0
+title: "Calgy API"
+version: 1
+baseUri: http://api.calgy.org
+mediaType: application/json
+
+types:
+  uuid:
+    type: string
+    pattern: "^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$"
+
+  PendingCalendar:
+    type: object
+    properties:
+      id:
+        type: uuid
+        required: true
+        example: "b376e8ff-b222-4559-a0e7-f344e505cee8"
+      state:
+        type: string
+        required: true
+        enum: [ "pending" ]
+        example: "pending"
+      title:
+        type: string
+        required: false
+        maxLength: 100
+        example: "Your Calendar"
+      description:
+        type: string
+        required: false
+        maxLength: 2000
+        example: "The calendar that started evolving."
+      public_url:
+        type: string
+        required: true
+        example: "http://api.calgy.org/calendars/b376e8ff-b222-4559-a0e7-f344e505cee8"
+
+  NotFoundError:
+    type: object
+    properties:
+      error:
+        type: string
+        example: "not found"
+
+  ValidationError:
+    type: object
+    properties:
+      path:
+        type: string
+        example: "#/title"
+      code:
+        type: string
+        example: "too_long"
+
+  ValidationErrors:
+    type: object
+    properties:
+      errors:
+        type: ValidationError[]
+        minItems: 1
+
+
+/calendars:
+  post:
+    description: "Create a new calendar."
+
+    body:
+      example: |
+        {}
+    responses:
+      201:
+        headers:
+          location:
+            type: string
+            description: "Location of the created calendar resource."
+            example: "http://api.calgy.org/calendars/413cd8cf-71f0-47a0-8ce4-644a95dba69e;admin"
+        body:
+          type: PendingCalendar
+
+  /{id}:
+    get:
+      description: "Retrieve an existing calendar."
+
+      responses:
+        200:
+          body:
+            type: PendingCalendar
+        404:
+          body:
+            type: NotFoundError
+
+    put:
+      description: "Update a calendar."
+
+      body:
+        type: PendingCalendar
+
+      responses:
+        200:
+          body:
+            type: PendingCalendar
+        404:
+          body:
+            type: NotFoundError
+        422:
+          body:
+            type: ValidationErrors
