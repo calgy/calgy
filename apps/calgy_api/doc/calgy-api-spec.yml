@@ -1,0 +1,263 @@
+openapi: "3.0.0"
+info:
+  title: "Calgy API"
+  version: "0.0.1"
+  license:
+    name: "MIT"
+    url: "https://raw.githubusercontent.com/calgy/calgy/master/LICENSE"
+servers:
+  - url: "http://api.local.calgy.org:{port}"
+    description: "Local Development Environment"
+    variables:
+      port:
+        default: "4000"
+  - url: "https://api.calgy.org"
+    description: "Production Environment"
+
+paths:
+  "/calendars":
+    description: "Calendars represent a collection of events."
+    post:
+      summary: "Create a new calendar"
+      tags: [ "calendar" ]
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            "$ref": "#/components/schemas/NewPendingCalendar"
+          headers:
+            Location:
+              description: >
+                Location of the created calendar resource. This is the same URL
+                as returned by the `admin_url` property and should be
+                considered a secret. As the API develops, additional ways of
+                authenticating will become possible.
+              schema:
+                type: string
+                example: "http://api.calgy.org/calendars/413cd8cf-71f0-47a0-8ce4-644a95dba69e;admin"
+        "422":
+          "$ref": "#/components/responses/UnprocessableEntity"
+
+  "/calendars/{calendarId}":
+    get:
+      summary: "Retrieve an existing calendar"
+      tags: [ "calendar" ]
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            "$ref": "#/components/schemas/Calendar"
+        "404":
+          "$ref": "#/components/responses/NotFound"
+    put:
+      summary: "Update a calendar"
+      tags: [ "calendar" ]
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            "$ref": "#/components/schemas/Calendar"
+        "404":
+          "$ref": "#/components/responses/NotFound"
+        "422":
+          "$ref": "#/components/responses/UnprocessableEntity"
+    delete:
+      summary: "Delete an existing calendar"
+      tags: [ "calendar" ]
+      responses:
+        "204":
+          "$ref": "#/components/responses/NoContent"
+        "404":
+          "$ref": "#/components/responses/NotFound"
+
+  "/calendars/{calendarId}/events":
+    post:
+      summary: "Create a new event"
+      tags: [ "event" ]
+      responses:
+        "201":
+          description: "Created"
+          headers:
+            Location:
+              description: "Location of the created event resource"
+          schema:
+            "$ref": "#/components/schemas/Event"
+        "404":
+          "$ref": "#/components/responses/NotFound"
+        "422":
+          "$ref": "#/components/responses/UnprocessableEntity"
+
+  "/events":
+    get:
+      summary: "Retrieve an existing event"
+      tags: [ "event" ]
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            "$ref": "#/components/schemas/Event"
+        "404":
+          "$ref": "#/components/responses/NotFound"
+
+  "/events/{eventId}":
+    put:
+      summary: "Update an event"
+      tags: [ "event" ]
+      responses:
+        "200":
+          description: "Success"
+          schema:
+            "$ref": "#/components/schemas/Event"
+        "404":
+          "$ref": "#/components/responses/NotFound"
+        "422":
+          "$ref": "#/components/responses/UnprocessableEntity"
+
+components:
+  schemas:
+    uuid:
+      type: string
+      pattern: "^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$"
+      description: "A universally unique identifier, always lowercase"
+      example: "b376e8ff-b222-4559-a0e7-f344e505cee8"
+
+    Calendar:
+      type: object
+      description: "A calendar"
+      properties:
+        "id":
+          "$ref": "#/components/schemas/uuid"
+        "state":
+          type: string
+          enum:
+            - "anonymous"
+            - "deleted"
+            - "pending"
+          example: "pending"
+        "title":
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Your Calendar"
+        "description":
+          type: string
+          minLength: 1
+          maxLength: 2000
+          example: "The calendar that started evolving."
+        "public_url":
+          type: string
+          description: "Public URL for retrieving details of a calendar. Read-only."
+          example: "http://api.calgy.org/calendars/b376e8ff-b222-4559-a0e7-f344e505cee8"
+      required:
+        - "id"
+        - "state"
+        - "public_url"
+
+    Event:
+      type: object
+      description: "An event"
+      properties:
+        "id":
+          "$ref": "#/components/schemas/uuid"
+        "title":
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: "Mission to Mars - Liftoff!"
+        "description":
+          type: string
+          minLength: 1
+          maxLength: 5000
+          example: >
+            Join us for an amazing launch event filled with disco music from
+            the world's largest rocket-mounted speakers. Liftoff is at 10:47,
+            but the music won't stop till we get to Mars!
+        "start_at":
+          type: string
+          format: "date-time"
+          example: "2022-08-17T14:00:00Z"
+        "end_at":
+          type: string
+          format: "date-time"
+          example: "2022-08-17T15:00:00Z"
+        "public_url":
+          type: string
+          example: "http://api.calgy.org/events/96ce421b-c9bb-4322-9d26-fbf403be43be"
+        "calendar_url":
+          type: string
+          example: "http://api.calgy.org/calendars/b376e8ff-b222-4559-a0e7-f344e505cee8"
+      required:
+        - "id"
+        - "title"
+        - "start_at"
+        - "public_url"
+        - "calendar_url"
+
+    NewPendingCalendar:
+      allOf:
+        - "$ref": "#/components/schemas/Calendar"
+        - properties:
+            "state":
+              type: "string"
+              enum:
+                - "pending"
+            "admin_url":
+              type: string
+              description: >
+                Admin URL for making changes to a calendar. This URL is
+                considered a secret and is only returned when the calendar
+                is first created.
+              example: "http://api.calgy.org/calendars/413cd8cf-71f0-47a0-8ce4-644a95dba69e;admin"
+
+  responses:
+    NoContent:
+      description: "No Content"
+    NotFound:
+      description: "Not Found"
+      schema:
+        type: object
+        properties:
+          "error":
+            type: string
+            enum:
+              - "not found"
+        additionalProperties: false
+      content:
+        "application/json":
+          example: |
+            { "error": "not found" }
+    UnprocessableEntity:
+      description: "Unprocessable Entity"
+      schema:
+        type: object
+        properties:
+          "errors":
+            type: array
+            minItems: 1
+            items:
+              type: object
+              properties:
+                "path":
+                  type: string
+                  format: "^#/[a-z0-9_]+$"
+                  example: "#/title"
+                "code":
+                  type: string
+                  format: "^[a-z0-9_]+$"
+                  example: "too_long"
+              additionalProperties: false
+        additionalProperties: false
+
+tags:
+  - name: "calendar"
+    description: "Calendar Resources"
+  - name: "event"
+    description: "Event Resources"
+
+x-tagGroups:
+  - name: "Calendar Management"
+    tags:
+      - "calendar"
+      - "event"
+
+

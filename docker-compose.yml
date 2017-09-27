@@ -18,6 +18,13 @@ services:
     volumes:
       - "./data/postgres:/var/lib/postgresql/data"
 
+  openapi:
+    image: "marciocamurati/redoc"
+    ports:
+      - "127.0.0.1:4001:80"
+    volumes:
+      - "./apps/calgy_api/doc:/usr/share/nginx/html/data"
+
   web:
     build: "."
     environment:

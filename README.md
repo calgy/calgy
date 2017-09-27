@@ -6,9 +6,6 @@
 
 Web server providing an API for managing calendars.
 
-The most recent copy of the Calgy API specification can be found at
-[apps/calgy_api/doc/calgy-api-spec.html](https://rawgit.com/calgy/calgy/master/apps/calgy_api/doc/calgy-api-spec.html).
-
 
 ## Local Development
 
@@ -82,25 +79,46 @@ You should now be able to access the server at http://localhost:4000/.
 
 ## API Specification
 
-The most recent copy of the Calgy API specification can be found at
-[apps/calgy_api/doc/calgy-api-spec.html](https://rawgit.com/calgy/calgy/master/apps/calgy_api/doc/calgy-api-spec.html).
+Calgy uses OpenAPI 3.0 to document its web API. The specification is kept in
+the calgy_api app under [apps/calgy_api/doc/calgy-api-spec.yml].
 
-### Updating / Regenerating the Specification
+### Viewing Locally / Making Changes
 
-When making changes to the calgy-api-spec.raml file, a new copy of the HTML
-version of the documentation should also be generated and committed; this
-ensures the latest specification is available for browsing without having to
-install anything.
+#### ReDoc (via docker-compose)
 
-Make sure you have [raml2html](https://github.com/raml2html/raml2html) installed:
-
-```bash
-npm install -g raml2html
-```
-
-To generate HTML documentation of the API specification:
+If you have already started the calgy server using `docker-compose up`, a
+copy of the documentation should be available at http://localhost:4001/. The
+documentation viewer runs a copy of [ReDoc](https://github.com/Rebilly/ReDoc)
+in a separate docker container that listens for requests on port 4001. If you
+want to spin up the documentation viewer separate from the application, you
+can run the following:
 
 ```bash
-cd apps/calgy_api/
-raml2html --input doc/calgy-api-spec.raml --output doc/calgy-api-spec.html
+docker-compose up openapi
 ```
+
+#### Alternative Viewers / Editors
+
+If you do not wish to modify the specification directly, some IDEs have
+plugins to view or modify OpenAPI 3.0 compatible specifications, There is
+also a [list of projects related to OpenAPI 3.0](https://github.com/Mermade/awesome-openapi3).
+
+#### OpenAPI Resources
+
+There's not a lot of great material for teaching or best practices regarding
+the latest 3.0 version of the specification, so you will probably have to rely
+on reading through the dense specification. Before 3.0, the specification used
+to go by the name "swagger" and looked substantially different than it does
+now. The [Swagger site](https://swagger.io/docs/specification/about) describes
+the latest 3.0 specification a little bit better than the official spec (use
+the side nav), but many parts of the site also refer to version 2.0 which is
+not compatible. Many of the tools also do not yet support 3.0, or only
+partially support it.
+
+* [OpenAPI 3.0 Specification](https://github.com/OAI/OpenAPI-Specification/blob/3.0.0/versions/3.0.0.md)
+* [JSON Schema Core Specification](http://json-schema.org/latest/json-schema-core.html)
+* [JSON Schema Validation Specification](http://json-schema.org/latest/json-schema-validation.html)
+* [Official OpenAPI Initiative Site](https://www.openapis.org/)
+* ["What is OpenAPI?" on the Swagger site](https://swagger.io/docs/specification/about/)
+* [awesome-openapi3 on GitHub](https://github.com/Mermade/awesome-openapi3)
+* [Projects tagged with openapi3 on GitHub](https://github.com/search?q=topic%3Aopenapi3)
