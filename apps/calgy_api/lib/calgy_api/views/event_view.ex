@@ -10,6 +10,7 @@ defmodule CalgyApi.EventView do
       end_at: format_datetime(event.end_at),
       description: event.description,
       public_url: event_url(conn, :show, event),
+      calendar_url: calendar_url(conn, :show, event.calendar_id),
     }
   end
 

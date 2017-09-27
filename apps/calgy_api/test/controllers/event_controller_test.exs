@@ -71,6 +71,8 @@ defmodule CalgyApi.EventControllerTest do
 
       assert body["title"] == @valid_attrs[:title]
       assert body["start_at"] == @valid_attrs[:start_at]
+
+      assert body["calendar_url"] == calendar_url(conn, :show, event.calendar_id)
     end
 
     test "responds with 404 if event is not found", %{conn: conn} do
