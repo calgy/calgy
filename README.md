@@ -6,6 +6,7 @@
 
 Web server providing an API for managing calendars.
 
+The most recent copy of the Calgy API specification can be [viewed online using ReDoc](https://rebilly.github.io/ReDoc/?url=https://raw.githubusercontent.com/calgy/calgy/master/apps/calgy_api/doc/calgy-api-spec.yml).
 
 ## Local Development
 
@@ -80,7 +81,7 @@ You should now be able to access the server at http://localhost:4000/.
 ## API Specification
 
 Calgy uses OpenAPI 3.0 to document its web API. The specification is kept in
-the calgy_api app under [apps/calgy_api/doc/calgy-api-spec.yml].
+the calgy_api app under [apps/calgy_api/doc/calgy-api-spec.yml]([apps/calgy_api/doc/calgy-api-spec.yml).
 
 ### Viewing Locally / Making Changes
 
